@@ -1,0 +1,59 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.6.9)  15 NOV 2024 12:55
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**/home/pandapythoner/Desktop/mycpp/teambook/Surstrumien-Bobra-Teambook/content/kactl.tex
+(/home/pandapythoner/Desktop/mycpp/teambook/Surstrumien-Bobra-Teambook/content/kactl.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+(/usr/share/texlive/texmf-dist/tex/latex/extsizes/extreport.cls
+Document Class: extreport 1996/10/08 v1.0 Non Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/extsizes/size8.clo
+File: size8.clo 1999/11/11 v1.4a NON-Standard LaTeX file (size option)
+) (/usr/share/texlive/texmf-dist/tex/latex/base/exscale.sty
+Package: exscale 2018/09/24 v2.1i Standard LaTeX package exscale
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 57.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/cmex/m/n on input line 57.
+\big@size=\dimen140
+)
+\c@part=\count187
+\c@chapter=\count188
+\c@section=\count189
+\c@subsection=\count190
+\c@subsubsection=\count191
+\c@paragraph=\count192
+\c@subparagraph=\count193
+\c@figure=\count194
+\c@table=\count195
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen141
+)
+
+! LaTeX Error: File `kactlpkg.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+/home/pandapythoner/Desktop/mycpp/teambook/Surstrumien-Bobra-Teambook/content/kactl.tex:3: Emergency stop.
+<read *> 
+         
+l.3 \kactlcontentdir
+                    {content}^^M
+*** (cannot \read from terminal in nonstop modes)
+
+ 
+Here is how much of TeX's memory you used:
+ 288 strings out of 475656
+ 5764 string characters out of 5787142
+ 1922975 words of memory out of 5000000
+ 22387 multiletter control sequences out of 15000+600000
+ 558368 words of font info for 37 fonts, out of 8000000 for 9000
+ 430 hyphenation exceptions out of 8191
+ 42i,0n,51p,283b,36s stack positions out of 10000i,1000n,20000p,200000b,200000s
+/home/pandapythoner/Desktop/mycpp/teambook/Surstrumien-Bobra-Teambook/content/kactl.tex:3:  ==> Fatal error occurred, no output PDF file produced!
