@@ -1,233 +1,240 @@
 /**
- * Author: Igor Markelov
- * Date: 2022-11-08
- * Description: Calculating FFT modulo MOD
+ * Author: Anton Stepanov
+ * Date: 2025-07-27
+ * Description: Fast FFT!
  * Time: O(n\log(n))
  */
-// DONT FORGET TO CALL initNTT() AND CHECK MAXLOG
+// Don't use Ofast, potential slow down by 2x!
+// Write mint first!
 
-const int MOD = 998244353;
-const int G = 3;
-const int MAXLOG = 23;
-int W[1 << MAXLOG];
-bool nttinit = false;
-vector<int> pws;
+int maxn, maxk;
+vector<int> rvi;
+vector<mint> wpws;
 
-int add(int a, int b) {
-    a += b;
-    if (a >= MOD) {
-        return a - MOD;
+void build_fft(int _maxk) {
+  maxk = _maxk;
+  maxn = (1 << maxk);
+  rvi.resize(maxn);
+  rvi[0] = 0;
+  for (int i = 1; i < maxn; i += 1) {
+    rvi[i] = (rvi[i >> 1] >> 1);
+    if (i & 1) {
+      rvi[i] |= (1 << (maxk - 1));
     }
-    return a;
+  }
+  mint w = mint(3).pow((mod - 1) / maxn);
+  mint pw = 1;
+  wpws.resize(maxn);
+  rep(i, maxn) {
+    wpws[rvi[i]] = pw;
+    pw *= w;
+  }
 }
 
-int sub(int a, int b) {
-    a -= b;
-    if (a < 0) {
-        return a + MOD;
+void fft(vector<mint> &a, int k) {
+  int n = (1 << k);
+  for (int ln = n / 2; ln >= 1; ln /= 2) {
+    int ln2 = ln * 2;
+    for (int i = 0; i < n; i += ln2) {
+      auto w = wpws[i / ln];
+      for (int j = i; j < i + ln; j += 1) {
+        auto u = a[j];
+        auto v = a[j + ln] * w;
+        a[j] = u + v;
+        a[j + ln] = u - v;
+      }
     }
-    return a;
+  }
+  rep(i, n) {
+    int mrv = (rvi[i] >> (maxk - k));
+    if (mrv < i) {
+      swap(a[i], a[mrv]);
+    }
+  }
 }
 
-int mul(int a, int b) {
-    return (ll) a * b % MOD;
+void inv_fft(vector<mint> &a, int k) {
+  fft(a, k);
+  int n = (1 << k);
+  mint invn = mint(n).inv();
+  rep(i, n) {
+    a[i] *= invn;
+  }
+  reverse(a.begin() + 1, a.end());
 }
 
-int power(int a, int n) {
-    int ans = 1;
-    while (n) {
-        if (n & 1) {
-            ans = mul(ans, a);
-        }
-        a = mul(a, a);
-        n >>= 1;
+vector<mint> mul(vector<mint> a, vector<mint> b) {
+  if (a.empty() or b.empty()) {
+    return {};
+  }
+  auto ca = a;
+  auto cb = b;
+  int lna = len(a);
+  int lnb = len(b);
+  int k = __lg(lna + lnb - 1);
+  if (lna + lnb - 1 == (1 << k) + 1) {
+    auto c = mul(vector<mint>(a.begin(), a.end() - 1), b);
+    c.resize(lna + lnb - 1);
+    rep(j, lnb) {
+      c[lna - 1 + j] += a[lna - 1] * b[j];
     }
-    return ans;
+    return c;
+  }
+  if (lna + lnb - 1 > (1 << k)) {
+    k += 1;
+  }
+  int n = (1 << k);
+  a.resize(n);
+  b.resize(n);
+  fft(a, k);
+  fft(b, k);
+  rep(i, n) {
+    a[i] *= b[i];
+  }
+  inv_fft(a, k);
+  a.resize(lna + lnb - 1);
+  return a;
 }
 
-int inv(int a) {
-    return power(a, MOD - 2);
+vector<mint> operator+(vector<mint> a, vector<mint> b) {
+  a.resize(max(a.size(), b.size()));
+  for (int i = 0; i < (int)b.size(); ++i) {
+    a[i] += b[i];
+  }
+  return a;
 }
 
-void initNTT() {
-    assert((MOD - 1) % (1 << MAXLOG) == 0);
-    pws.push_back(power(G, (MOD - 1) / (1 << MAXLOG)));
-    for (int i = 0; i < MAXLOG - 1; ++i) {
-        pws.push_back(mul(pws.back(), pws.back()));
-    }
-    assert(pws.back() == MOD - 1);
-    W[0] = 1;
-    for (int i = 1; i < (1 << MAXLOG); ++i) {
-        W[i] = mul(W[i - 1], pws[0]);
-    }
+vector<mint> operator-(vector<mint> a, vector<mint> b) {
+  a.resize(max(a.size(), b.size()));
+  for (int i = 0; i < (int)b.size(); ++i) {
+    a[i] -= b[i];
+  }
+  return a;
 }
 
-void ntt(int n, vector <int>& a, bool rev) {
-    if (!nttinit) {
-        initNTT();
-        nttinit = 1;
-    }
-    int lg = log2(n);
-    vector<int> rv(n);
-    for (int i = 1; i < n; ++i) {
-        rv[i] = (rv[i >> 1] >> 1) ^ ((i & 1) << (lg - 1));
-        if (rv[i] > i) swap(a[i], a[rv[i]]);
-    }
-    int num = MAXLOG - 1;
-    for (int len = 1; len < n; len *= 2) {
-        for (int i = 0; i < n; i += 2 * len) {
-            for (int j = 0; j < len; ++j) {
-                int u = a[i + j], v = mul(W[j << num], a[i + j + len]);
-                a[i + j] = add(u, v);
-                a[i + j + len] = sub(u, v);
-            }
-        }
-        --num;
-    }
-    if (rev) {
-        int rev_n = power(n, MOD - 2);
-        for (int i = 0; i < n; ++i) a[i] = mul(a[i], rev_n);
-        reverse(a.begin() + 1, a.end());
-    }
+vector<mint> inv(const vector<mint> &a, int need) {
+  vector<mint> b = {a[0].inv()};
+  while ((int)b.size() < need) {
+    vector<mint> a1 = a;
+    int m = b.size();
+    a1.resize(min((int)a1.size(), 2 * m));
+    b = mul(b, vector<mint>{2} - mul(a1, b));
+    b.resize(2 * m);
+  }
+  b.resize(need);
+  return b;
 }
 
-vector<int> conv(vector<int> a, vector<int> b) {
-    int lg = 0;
-    while ((1 << lg) < a.size() + b.size() + 1)
-        ++lg;
-    int n = 1 << lg;
-    assert(a.size() + b.size() <= n + 1);
-    a.resize(n);
-    b.resize(n);
-    ntt(n, a, false);
-    ntt(n, b, false);
-    for (int i = 0; i < n; ++i) {
-        a[i] = mul(a[i], b[i]);
-    }
-    ntt(n, a, true);
-    while (a.size() > 1 && a.back() == 0) {
-        a.pop_back();
-    }
-    return a;
+vector<mint> mul2(vector<mint> a, vector<mint> b) {
+  int lna = len(a);
+  int lnb = len(b);
+  int k = 0;
+  while ((1 << k) < lna) {
+    ++k;
+  }
+  int n = (1 << k);
+  a.resize(n);
+  reverse(all(b));
+  b.resize(n);
+  fft(a, k);
+  fft(b, k);
+  rep(i, n) {
+    a[i] *= b[i];
+  }
+  inv_fft(a, k);
+  vector<mint> c(lna - lnb + 1);
+  rep(i, len(c)) {
+    c[i] = a[lnb - 1 + i];
+  }
+  return c;
 }
 
-vector<int> add(vector<int> a, vector<int> b) {
-    a.resize(max(a.size(), b.size()));
-    for (int i = 0; i < (int) b.size(); ++i) {
-        a[i] = add(a[i], b[i]);
-    }
-    return a;
+vector<mint> multipoint(vector<mint> a, vector<mint> x) {
+  int n = x.size();
+  int m = len(a);
+  vector<vector<mint>> tree(2 * n);
+  for (int i = 0; i < n; ++i) {
+    tree[i + n] = {1, 0 - x[i]};
+  }
+  for (int i = n - 1; i; --i) {
+    tree[i] = mul(tree[2 * i], tree[2 * i + 1]);
+  }
+  auto tinv = inv(tree[1], m);
+  a.resize(n + m - 1);
+  auto c = mul2(a, tinv);
+  tree[1] = c;
+  for (int i = 1; i < n; i += 1) {
+    auto x = tree[i + i];
+    auto y = tree[i + i + 1];
+    tree[i + i] = mul2(tree[i], y);
+    tree[i + i + 1] = mul2(tree[i], x);
+  }
+  vector<mint> res(n);
+  for (int i = 0; i < n; ++i) {
+    res[i] = tree[i + n][0];
+  }
+  return res;
 }
 
-vector<int> sub(vector<int> a, vector<int> b) {
-    a.resize(max(a.size(), b.size()));
-    for (int i = 0; i < (int) b.size(); ++i) {
-        a[i] = sub(a[i], b[i]);
-    }
-    return a;
+vector<mint> div(vector<mint> a, vector<mint> b) {
+  int n = a.size() - 1;
+  int m = b.size() - 1;
+  if (n < m) {
+    return {0};
+  }
+  reverse(all(a));
+  reverse(all(b));
+  a.resize(n - m + 1);
+  b.resize(n - m + 1);
+  vector<mint> c = inv(b, b.size());
+  vector<mint> q = mul(a, c);
+  q.resize(n - m + 1);
+  reverse(all(q));
+  return q;
 }
 
-vector<int> inv(const vector<int> &a, int need) {
-    vector<int> b = {inv(a[0])};
-    while ((int) b.size() < need) {
-        vector<int> a1 = a;
-        int m = b.size();
-        a1.resize(min((int) a1.size(), 2 * m));
-        b = conv(b, sub({2}, conv(a1, b)));
-        b.resize(2 * m);
-    }
-    b.resize(need);
-    return b;
+vector<mint> mod_poly(vector<mint> a, vector<mint> b) {
+  auto res = a - mul(b, div(a, b));
+  res.resize(len(b) - 1);
+  return res;
 }
 
-vector<int> div(vector<int> a, vector<int> b) {
-    if (count(all(a), 0) == a.size()) {
-        return {0};
-    }
-    assert(a.back() != 0 && b.back() != 0);
-    int n = a.size() - 1;
-    int m = b.size() - 1;
-    if (n < m) {
-        return {0};
-    }
-    reverse(all(a));
-    reverse(all(b));
-    a.resize(n - m + 1);
-    b.resize(n - m + 1);
-    vector<int> c = inv(b, b.size());
-    vector<int> q = conv(a, c);
-    q.resize(n - m + 1);
-    reverse(all(q));
-    return q;
+vector<mint> deriv(vector<mint> a) {
+  for (int i = 1; i < (int)a.size(); ++i) {
+    a[i - 1] = a[i] * i;
+  }
+  a.back() = 0;
+  if (a.size() > 1) {
+    a.pop_back();
+  }
+  return a;
 }
 
-vector<int> mod(vector<int> a, vector<int> b) {
-    auto res = sub(a, conv(b, div(a, b)));
-    while (res.size() > 1 && res.back() == 0) {
-        res.pop_back();
-    }
-    return res;
+vector<mint> integ(vector<mint> a) {
+  a.push_back(0);
+  for (int i = (int)a.size() - 1; i; --i) {
+    a[i] = a[i - 1] * mint(i).inv();
+  }
+  a[0] = 0;
+  return a;
 }
 
-vector<int> multipoint(vector<int> a, vector<int> x) {
-    int n = x.size();
-    vector<vector<int>> tree(2 * n);
-    for (int i = 0; i < n; ++i) {
-        tree[i + n] = {x[i], MOD - 1};
-    }
-    for (int i = n - 1; i; --i) {
-        tree[i] = conv(tree[2 * i], tree[2 * i + 1]);
-    }
-    tree[1] = mod(a, tree[1]);
-    for (int i = 2; i < 2 * n; ++i) {
-        tree[i] = mod(tree[i >> 1], tree[i]);
-    }
-    vector<int> res(n);
-    for (int i = 0; i < n; ++i) {
-        res[i] = tree[i + n][0];
-    }
-    return res;
+vector<mint> log(vector<mint> a, int n) {
+  auto res = integ(mul(deriv(a), inv(a, n)));
+  res.resize(n);
+  return res;
 }
 
-vector<int> deriv(vector<int> a) {
-    for (int i = 1; i < (int) a.size(); ++i) {
-        a[i - 1] = mul(i, a[i]);
-    }
-    a.back() = 0;
-    if (a.size() > 1) {
-        a.pop_back();
-    }
-    return a;
+vector<mint> exp(vector<mint> a, int need) {
+  vector<mint> b = {1};
+  while ((int)b.size() < need) {
+    vector<mint> a1 = a;
+    int m = b.size();
+    a1.resize(min((int)a1.size(), 2 * m));
+    a1[0] += 1;
+    b = mul(b, a1 - log(b, 2 * m));
+    b.resize(2 * m);
+  }
+  b.resize(need);
+  return b;
 }
-
-vector<int> integ(vector<int> a) {
-    a.push_back(0);
-    for (int i = (int) a.size() - 1; i; --i) {
-        a[i] = mul(a[i - 1], inv(i));
-    }
-    a[0] = 0;
-    return a;
-}
-
-vector<int> log(vector<int> a, int n) {
-    assert(a[0] == 1);
-    auto res = integ(conv(deriv(a), inv(a, n)));
-    res.resize(n);
-    return res;
-}
-
-vector<int> exp(vector<int> a, int need) {
-    assert(a[0] == 0);
-    vector<int> b = {1};
-    while ((int) b.size() < need) {
-        vector<int> a1 = a;
-        int m = b.size();
-        a1.resize(min((int) a1.size(), 2 * m));
-        a1[0] = add(a1[0], 1);
-        b = conv(b, sub(a1, log(b, 2 * m)));
-        b.resize(2 * m);
-    }
-    b.resize(need);
-    return b;
-}
-
