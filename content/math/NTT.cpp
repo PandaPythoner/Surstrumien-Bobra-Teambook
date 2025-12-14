@@ -4,8 +4,8 @@
  * Description: Fast FFT!
  * Time: O(n\log(n))
  */
-// Don't use Ofast, potential slow down by 2x!
-// Write mint first!
+ // Don't use Ofast, potential slow down by 2x!
+ // Write mint first!
 
 int maxn, maxk;
 vector<int> rvi;
@@ -31,7 +31,7 @@ void build_fft(int _maxk) {
   }
 }
 
-void fft(vector<mint> &a, int k) {
+void fft(vector<mint>& a, int k) {
   int n = (1 << k);
   for (int ln = n / 2; ln >= 1; ln /= 2) {
     int ln2 = ln * 2;
@@ -53,7 +53,7 @@ void fft(vector<mint> &a, int k) {
   }
 }
 
-void inv_fft(vector<mint> &a, int k) {
+void inv_fft(vector<mint>& a, int k) {
   fft(a, k);
   int n = (1 << k);
   mint invn = mint(n).inv();
@@ -112,8 +112,8 @@ vector<mint> operator-(vector<mint> a, vector<mint> b) {
   return a;
 }
 
-vector<mint> inv(const vector<mint> &a, int need) {
-  vector<mint> b = {a[0].inv()};
+vector<mint> inv(const vector<mint>& a, int need) {
+  vector<mint> b = { a[0].inv() };
   while ((int)b.size() < need) {
     vector<mint> a1 = a;
     int m = b.size();
@@ -138,9 +138,7 @@ vector<mint> mul2(vector<mint> a, vector<mint> b) {
   b.resize(n);
   fft(a, k);
   fft(b, k);
-  rep(i, n) {
-    a[i] *= b[i];
-  }
+  rep(i, n) a[i] *= b[i];
   inv_fft(a, k);
   vector<mint> c(lna - lnb + 1);
   rep(i, len(c)) {
@@ -154,7 +152,7 @@ vector<mint> multipoint(vector<mint> a, vector<mint> x) {
   int m = len(a);
   vector<vector<mint>> tree(2 * n);
   for (int i = 0; i < n; ++i) {
-    tree[i + n] = {1, 0 - x[i]};
+    tree[i + n] = { 1, 0 - x[i] };
   }
   for (int i = n - 1; i; --i) {
     tree[i] = mul(tree[2 * i], tree[2 * i + 1]);
@@ -179,9 +177,7 @@ vector<mint> multipoint(vector<mint> a, vector<mint> x) {
 vector<mint> div(vector<mint> a, vector<mint> b) {
   int n = a.size() - 1;
   int m = b.size() - 1;
-  if (n < m) {
-    return {0};
-  }
+  if (n < m) return { 0 };
   reverse(all(a));
   reverse(all(b));
   a.resize(n - m + 1);
@@ -226,7 +222,7 @@ vector<mint> log(vector<mint> a, int n) {
 }
 
 vector<mint> exp(vector<mint> a, int need) {
-  vector<mint> b = {1};
+  vector<mint> b = { 1 };
   while ((int)b.size() < need) {
     vector<mint> a1 = a;
     int m = b.size();
@@ -240,45 +236,43 @@ vector<mint> exp(vector<mint> a, int need) {
 }
 
 vector<mint> gf_projection(vector<mint> f) { // ensure that f[0]=0
-    int lnf = len(f);
-    int n = 1;
-    while (n < len(f)) n *= 2;
-    vector<mint> g(n);
-    g[n - lnf] = 1;
-    f.resize(n);
-    rep(i, n) {
-        f[i] = 0 - f[i];
+  int lnf = len(f);
+  int n = 1;
+  while (n < len(f)) n *= 2;
+  vector<mint> g(n);
+  g[n - lnf] = 1;
+  f.resize(n);
+  rep(i, n) f[i] = 0 - f[i];
+  int m = 1;
+  while (n > 1) {
+    f.resize(4 * n * m);
+    f[2 * n * m] = 1;
+    g.resize(4 * n * m);
+    fft(f);
+    fft(g);
+    auto q = f;
+    rotate(q.begin(), q.begin() + 2 * n * m, q.end());
+    vector<mint> gf(4 * n * m), ff(4 * n * m);
+    rep(i, 4 * n * m) {
+      gf[i] = g[i] * q[i];
+      ff[i] = f[i] * q[i];
     }
-    int m = 1;
-    while (n > 1) {
-        f.resize(4 * n * m);
-        f[2 * n * m] = 1;
-        g.resize(4 * n * m);
-        fft(f);
-        fft(g);
-        auto q = f;
-        rotate(q.begin(), q.begin() + 2 * n * m, q.end());
-        vector<mint> gf(4 * n * m), ff(4 * n * m);
-        rep(i, 4 * n * m) {
-            gf[i] = g[i] * q[i];
-            ff[i] = f[i] * q[i];
-        }
-        inv_fft(gf);
-        inv_fft(ff);
-        ff[0] -= 1;
-        f.assign(2 * n * m, 0);
-        g.assign(2 * n * m, 0);
-        rep(i, n / 2) rep(j, 2 * m) {
-            f[j * n + i] = ff[j * (2 * n) + 2 * i];
-            g[j * n + i] = gf[j * (2 * n) + 2 * i + 1];
-        }
-        n /= 2; m *= 2;
+    inv_fft(gf);
+    inv_fft(ff);
+    ff[0] -= 1;
+    f.assign(2 * n * m, 0);
+    g.assign(2 * n * m, 0);
+    rep(i, n / 2) rep(j, 2 * m) {
+      f[j * n + i] = ff[j * (2 * n) + 2 * i];
+      g[j * n + i] = gf[j * (2 * n) + 2 * i + 1];
     }
-    vector<mint> res(m);
-    rep(i, m) {
-        res[i] = g[2 * i];
-    }
-    reverse(all(res));
-    res.resize(lnf);
-    return res;
+    n /= 2; m *= 2;
+  }
+  vector<mint> res(m);
+  rep(i, m) {
+    res[i] = g[2 * i];
+  }
+  reverse(all(res));
+  res.resize(lnf);
+  return res;
 }

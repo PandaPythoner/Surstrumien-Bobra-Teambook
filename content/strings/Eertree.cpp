@@ -1,46 +1,55 @@
 /**
- * Author: Iurii Pustovalov
- * Date: 2022-11-08
- * Description: Creates Eertree of string str
+ * Author: Alexey Mikhnenko
+ * Date: ???
+ * Description: Palindrome Tree
  * Time: O(n)
  */
-struct eertree {
-    int len[MAXN], suffLink[MAXN];
-    int to[MAXN][26];
-    int numV, v;
-    void addLetter(int n, string &str) {
-        while (str[n - len[v] - 1] != str[n])
-            v = suffLink[v];
-        int u = suffLink[v];
-        while (str[n - len[u] - 1] != str[n])
-            u = suffLink[u];
-        int u_ = to[u][str[n] - 'a'];
-        int v_ = to[v][str[n] - 'a'];
-        if (v_ == -1) {
-            v_ = to[v][str[n] - 'a'] = numV;
-            len[numV++] = len[v] + 2;
-            suffLink[v_] = u_;
-        }
-        v = v_;
+struct palindromic_tree {
+    int new_node() {
+        tree.push_back(node());
+        return static_cast<int>(tree.size()) - 1;
     }
-    void init() {
-        len[0] = -1;
-        len[1] = 0;
-        suffLink[1] = 0;
-        suffLink[0] = 0;
-        numV = 2;
-        for (int i = 0; i < 26; ++i) {
-            to[0][i] = numV++;
-            suffLink[numV - 1] = 1;
-            len[numV - 1] = 1;
+
+    int find_suffix(int v) {
+        int n = str.size();
+        while (tree[v].length == n - 1 || str.back() != str[n - 2 - tree[v].length]) {
+            v = tree[v].suflink;
         }
-        v = 0;
+        return v;
     }
-    void init(int sz) {
-        for (int i = 0; i < sz; ++i) {
-            len[i] = suffLink[i] = 0;
-            for (int j = 0; j < 26; ++j)
-                to[i][j] = -1;
+
+    struct node {
+        int length = 0, suflink = -1, to[ALPHABET];
+        node() { memset(to, -1, sizeof(to)); }
+    };
+
+    int even, odd, last;
+    vector<node> tree;
+    vector<int> str;
+
+    palindromic_tree() {
+        odd = new_node();
+        even = new_node();
+        tree[even].suflink = tree[odd].suflink = odd;
+        tree[odd].length = -1;
+        last = even;
+    }
+
+    void add(int symbol) {
+        str.push_back(symbol);
+        last = find_suffix(last);
+        if (tree[last].to[symbol] == -1) {
+            int v = new_node();
+            tree[v].length = tree[last].length + 2;
+            int u = find_suffix(tree[last].suflink);
+            if (tree[u].to[symbol] != -1) {
+                tree[v].suflink = tree[u].to[symbol];
+            }
+            else {
+                tree[v].suflink = even;
+            }
+            tree[last].to[symbol] = v;
         }
+        last = tree[last].to[symbol];
     }
 };
