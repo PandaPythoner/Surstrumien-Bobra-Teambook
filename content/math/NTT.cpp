@@ -238,3 +238,47 @@ vector<mint> exp(vector<mint> a, int need) {
   b.resize(need);
   return b;
 }
+
+vector<mint> gf_projection(vector<mint> f) { // ensure that f[0]=0
+    int lnf = len(f);
+    int n = 1;
+    while (n < len(f)) n *= 2;
+    vector<mint> g(n);
+    g[n - lnf] = 1;
+    f.resize(n);
+    rep(i, n) {
+        f[i] = 0 - f[i];
+    }
+    int m = 1;
+    while (n > 1) {
+        f.resize(4 * n * m);
+        f[2 * n * m] = 1;
+        g.resize(4 * n * m);
+        fft(f);
+        fft(g);
+        auto q = f;
+        rotate(q.begin(), q.begin() + 2 * n * m, q.end());
+        vector<mint> gf(4 * n * m), ff(4 * n * m);
+        rep(i, 4 * n * m) {
+            gf[i] = g[i] * q[i];
+            ff[i] = f[i] * q[i];
+        }
+        inv_fft(gf);
+        inv_fft(ff);
+        ff[0] -= 1;
+        f.assign(2 * n * m, 0);
+        g.assign(2 * n * m, 0);
+        rep(i, n / 2) rep(j, 2 * m) {
+            f[j * n + i] = ff[j * (2 * n) + 2 * i];
+            g[j * n + i] = gf[j * (2 * n) + 2 * i + 1];
+        }
+        n /= 2; m *= 2;
+    }
+    vector<mint> res(m);
+    rep(i, m) {
+        res[i] = g[2 * i];
+    }
+    reverse(all(res));
+    res.resize(lnf);
+    return res;
+}

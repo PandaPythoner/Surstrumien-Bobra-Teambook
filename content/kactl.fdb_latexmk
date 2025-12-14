@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1760191210.30457 "/home/pandapythoner/icpc/Surstrumien-Bobra-Teambook/content/kactl.tex" "kactl.pdf" "kactl" 1760191210.71452 2
+["pdflatex"] 1765740643.43425 "/home/pandapythoner/icpc/Surstrumien-Bobra-Teambook/content/kactl.tex" "kactl.pdf" "kactl" 1765740643.76841 2
   "/etc/texmf/web2c/texmf.cnf" 1754063406.71822 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/pandapythoner/icpc/Surstrumien-Bobra-Teambook/content/kactl.tex" 1760191209.8947 1445 f987e3bc732ae8a148ef672311109d20 ""
+  "/home/pandapythoner/icpc/Surstrumien-Bobra-Teambook/content/kactl.tex" 1765740642.68351 1445 8d4bea8a80260a323127573634842c21 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr8.tfm" 1136768653 1292 21c1c5bfeaebccffdb478fd231a0997d ""
   "/usr/share/texlive/texmf-dist/tex/latex/base/exscale.sty" 1738182759 2581 410e238d5562ac0c02c3a54e6b0161aa ""
@@ -10,8 +10,8 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1756239283 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/usr/share/texmf/web2c/texmf.cnf" 1756239283 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1759426709 3605077 1c33d085f3e0c114ac902153171bf90f ""
-  "kactl.aux" 1760191210.2947 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
-  "kactl.tex" 1760191209.8947 1445 f987e3bc732ae8a148ef672311109d20 ""
+  "kactl.aux" 1765740643.42416 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "kactl.tex" 1765740642.68351 1445 8d4bea8a80260a323127573634842c21 ""
   "kactlpkg.sty" 0 -1 0 ""
   (generated)
   "kactl.aux"
