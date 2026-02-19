@@ -1,12 +1,11 @@
 /**
  * Author: Igor Markelov
  * Date: 2022-11-18
- * Description: Find both tangets to the convex polygon. \\
- * (Zakaldovany algos mozhet sgonyat za pivom tak zhe).
+ * Description: Rightest and Leftest tangents
  * Time: O(\log(n))
  */
 
-pair<int, int> tangents_alex(vector<point> &p, point &a) {
+pair<int, int> tangents_alex(vector<vec> &p, vec &a) {
     int n = p.size();
     int l = __lg(n);
     auto findWithSign = [&](int val) {

@@ -1,7 +1,7 @@
 /**
  * Author: alexxela12345,daubi,talant
  * Date: 2024-08-03
- * Description: struct Point
+ * Description: struct vec
  */
 
 const ld EPS = 1e-7;
@@ -20,30 +20,29 @@ int sign(ld x) {
     return 0;
 }
 
-#define vec point
-struct point {//% - cross, * - dot
+struct vec {//% - cross, * - dot
     ld x, y;
-    auto operator<=>(const point&) const = default;
+    auto operator<=>(const vec&) const = default;
 };
-ld operator*(const point &a, const point &b) {
+ld operator*(const vec &a, const vec &b) {
     return a.x * b.x + a.y * b.y;
 }
-ld operator%(const point &a, const point &b) {
+ld operator%(const vec &a, const vec &b) {
     return a.x * b.y - a.y * b.x;
 }
-point operator-(const point &a, const point &b) {
+vec operator-(const vec &a, const vec &b) {
     return {a.x - b.x, a.y - b.y};
 }
-point operator+(const point &a, const point &b) {
+vec operator+(const vec &a, const vec &b) {
     return {a.x + b.x, a.y + b.y};
 }
-point operator*(const point &a, ld b) {
+vec operator*(const vec &a, ld b) {
     return {a.x * b, a.y * b};
 }
-point operator/(const point &a, ld b) {
+vec operator/(const vec &a, ld b) {
     return {a.x / b, a.y / b};
 }
-bool operator<(const point &a, const point &b)  {
+bool operator<(const vec &a, const vec &b)  {
     if (sign(a.y - b.y) != 0) {
         return a.y < b.y;
     } else if (sign(a.x - b.x) != 0) {
@@ -51,28 +50,28 @@ bool operator<(const point &a, const point &b)  {
     }
     return 0;
 }
-ld len2(const point &a) {
+ld len2(const vec &a) {
     return sq(a.x) + sq(a.y);
 }
-ld len(const point &a) {
+ld len(const vec &a) {
     return sqrt(len2(a));
 }
-point norm(point a) {
+vec norm(vec a) {
     return a / len(a);
 }
-int half(point a) {
+int half(vec a) {
     return (sign(a.y) == -1 || (sign(a.y) ==0 && a.x < 0));
 }
-point ort(point a) {
+vec ort(vec a) {
     return {-a.y, a.x};
 }
-point turn(point a, ld ang) {
+vec turn(vec a, ld ang) {
     return {a.x * cos(ang) - a.y * sin(ang), a.x * sin(ang) + a.y * cos(ang)};
 }
-ld getAngle(point &a, point &b) {
+ld getAngle(vec &a, vec &b) {
     return atan2(a % b, a * b);
 }
-bool cmpHalf(const point &a, const point &b) {
+bool cmpHalf(const vec &a, const vec &b) {
     if (half(a) != half(b)) {
         return half(b);
     } else {

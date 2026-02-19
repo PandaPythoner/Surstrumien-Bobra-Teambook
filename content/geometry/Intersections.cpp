@@ -12,8 +12,8 @@ bool isCrossed(ld lx, ld rx, ld ly, ld ry) {
     return sign(min(rx, ry) - max(lx, ly)) >= 0;
 }
 
-// if two segments [a, b] and [c, d] has AT LEAST one common point -> true
-bool intersects(const point &a, const point &b, const point &c, const point &d) {
+// if two segments [a, b] and [c, d] has AT LEAST one common vec -> true
+bool intersects(const vec &a, const vec &b, const vec &c, const vec &d) {
     if (!isCrossed(a.x, b.x, c.x, d.x))
         return false;
     if (!isCrossed(a.y, b.y, c.y, d.y))
@@ -23,7 +23,7 @@ bool intersects(const point &a, const point &b, const point &c, const point &d) 
     return 1;
 }
 //intersecting lines
-bool intersect(line l, line m, point &I) {
+bool intersect(line l, line m, vec &I) {
     ld d = l.b * m.a - m.b * l.a;
     if (sign(d) == 0) {
         return false;
@@ -34,7 +34,7 @@ bool intersect(line l, line m, point &I) {
     return true;
 }
 //intersecting circles
-int intersect(point o1, ld r1, point o2, ld r2, point &i1, point &i2) {
+int intersect(vec o1, ld r1, vec o2, ld r2, vec &i1, vec &i2) {
     if (r1 < r2) {
         swap(o1, o2);
         swap(r1, r2);
@@ -48,7 +48,7 @@ int intersect(point o1, ld r1, point o2, ld r2, point &i1, point &i2) {
     }
     ld d = (sq(r1) - sq(r2) + sq(ln)) / 2 / ln;
     vec v = norm(o2 - o1);
-    point a = o1 + v * d;
+    vec a = o1 + v * d;
     if (sign(ln - r1 - r2) == 0 || sign(ln + r2 - r1) == 0) {
         i1 = a;
         return 1;
@@ -59,7 +59,7 @@ int intersect(point o1, ld r1, point o2, ld r2, point &i1, point &i2) {
     return 2;
 }
 //intersecting line and circle, line should be normed
-int intersect(point o, ld r, line l, point &i1, point &i2) {
+int intersect(vec o, ld r, line l, vec &i1, vec &i2) {
     ld len = abs(l.eval(o));
     int sgn = sign(len - r);
     if (sgn == 1) {
@@ -69,7 +69,7 @@ int intersect(point o, ld r, line l, point &i1, point &i2) {
     if (sign(l.eval(o + v)) != 0) {
         v = vec{0, 0} - v;
     }
-    point a = o + v;
+    vec a = o + v;
     if (sgn == 0) {
         i1 = a;
         return 1;

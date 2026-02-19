@@ -4,19 +4,19 @@
  * Description: Find the intersection of the half planes.
  * Time: O(n \log(n))
  */
-vec getPoint(line l) { return {-l.b, l.a}; }
+vec getvec(line l) { return {-l.b, l.a}; }
 
 bool bad(line a, line b, line c) {
-    point x;
+    vec x;
     assert(intersect(b, c, x) == 1);
     return a.eval(x) < 0;
 }
 
 // Do not forget about the bounding box
-vector<point> hpi(vector<line> lines) {
+vector<vec> hpi(vector<line> lines) {
     sort(all(lines), [](line al, line bl) -> bool {
-        point a = getPoint(al);
-        point b = getPoint(bl);
+        vec a = getvec(al);
+        vec b = getvec(bl);
         if (half(a) != half(b)) {
             return half(a) < half(b);
         }
@@ -28,14 +28,14 @@ vector<point> hpi(vector<line> lines) {
         for (int i = 0; i < (int)lines.size(); i++) {
             bool flag = false;
             while (!st.empty()) {
-                if (len(getPoint(st.back().first) - getPoint(lines[i])) < EPS) {
+                if (len(getvec(st.back().first) - getvec(lines[i])) < EPS) {
                     if (lines[i].c >= st.back().first.c) {
                         flag = true;
                         break;
                     } else {
                         st.pop_back();
                     }
-                } else if (getPoint(st.back().first) % getPoint(lines[i]) < EPS / 2) {
+                } else if (getvec(st.back().first) % getvec(lines[i]) < EPS / 2) {
                     return {};
                 } else if (st.size() >= 2 &&
                            bad(st[st.size() - 2].first, st[st.size() - 1].first,
@@ -51,14 +51,14 @@ vector<point> hpi(vector<line> lines) {
     }
 
     vector<int> en(lines.size(), -1);
-    vector<point> ans;
+    vector<vec> ans;
     for (int i = 0; i < (int)st.size(); i++) {
         if (en[st[i].second] == -1) {
             en[st[i].second] = i;
             continue;
         }
         for (int j = en[st[i].second]; j < i; j++) {
-            point I;
+            vec I;
             assert(intersect(st[j].first, st[j + 1].first, I) == 1);
             ans.push_back(I);
         }

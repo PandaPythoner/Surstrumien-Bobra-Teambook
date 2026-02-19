@@ -5,7 +5,7 @@
  * Time: O(n)
  */
 
-ld diameter(vector<point> p) {
+ld diameter(vector<vec> p) {
     p = hull(p);
     int n = p.size();
     if (n <= 1) {

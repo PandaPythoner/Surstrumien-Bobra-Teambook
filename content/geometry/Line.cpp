@@ -14,15 +14,15 @@ struct line {
         b /= d;
         c /= d;
     }
-    ld eval(point p) const { return a * p.x + b * p.y + c; }
-    bool isIn(point p) const { return sign(eval(p)) >= 0; }
+    ld eval(vec p) const { return a * p.x + b * p.y + c; }
+    bool isIn(vec p) const { return sign(eval(p)) >= 0; }
     bool operator==(const line &other) const {
         return sign(a * other.b - b * other.a) == 0 &&
                sign(a * other.c - c * other.a) == 0 &&
                sign(b * other.c - c * other.b) == 0;
     }
 };
-line getln(point a, point b) {
+line getln(vec a, vec b) {
     line res;
     res.a = a.y - b.y;
     res.b = b.x - a.x;

@@ -3,8 +3,8 @@
  * Date: 2022-11-18
  * Description: Tangents to circles.
  */
-// tangents from point to circle
-int tangents(point &o, ld r, point &p, point &i1, point &i2) {
+// tangents from vec to circle
+int tangents(vec &o, ld r, vec &p, vec &i1, vec &i2) {
     ld ln = len(o - p);
     int sgn = sign(ln - r);
     if (sgn == -1) {
@@ -15,7 +15,7 @@ int tangents(point &o, ld r, point &p, point &i1, point &i2) {
     } else {
         ld x = sq(r) / ln;
         vec v = norm(p - o) * x;
-        point a = o + v;
+        vec a = o + v;
         v = ort(norm(p - o)) * sqrt(sq(r) - sq(x));
         i1 = a + v;
         i2 = a - v;
@@ -23,7 +23,7 @@ int tangents(point &o, ld r, point &p, point &i1, point &i2) {
     }
 }
 
-void _tangents(point c, ld r1, ld r2, vector<line> &ans) {
+void _tangents(vec c, ld r1, ld r2, vector<line> &ans) {
     ld r = r2 - r1;
     ld z = sq(c.x) + sq(c.y);
     ld d = z - sq(r);
@@ -37,7 +37,7 @@ void _tangents(point c, ld r1, ld r2, vector<line> &ans) {
     ans.push_back(l);
 }
 // tangents between two circles
-vector<line> tangents(point o1, ld r1, point o2, ld r2) {
+vector<line> tangents(vec o1, ld r1, vec o2, ld r2) {
     vector<line> ans;
     for (int i = -1; i <= 1; i += 2)
         for (int j = -1; j <= 1; j += 2)
